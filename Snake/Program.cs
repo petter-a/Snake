@@ -13,8 +13,7 @@ namespace Snake
         LinkedList<GameObject> m_objects;
 
         // Constructor / Initialize object
-        public Level()
-        {
+        public Level() {
             m_objects =
                 new LinkedList<GameObject>();
             this.Reset();

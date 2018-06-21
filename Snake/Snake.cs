@@ -16,6 +16,9 @@ namespace Snake
         } 
 
         // Constructor / Initialize object
+        // ======================================
+        // Note that a new Coordinate struct is passed
+        // straight away to the base class constructor
         public Snake() : base(new Coordinate()) {
             this.m_tail = new Coordinate[m_limit_size];
             this.Spawn();
@@ -30,20 +33,25 @@ namespace Snake
             for (int i = (m_size - 1); i > 0; i--) {
                 m_tail[i] = m_tail[i - 1];
             }
-            // Call Baseclass
+            // Call baseclass to perform default logic
+            // ===================================================
+            // This call could be removed if no default handling
+            // is required/needed.
             base.Update();
         }
         // Draw the object
         // ======================================
         public override void Draw(Screen sc) {
-            // Draw Snake
+            // Add Drawing logic
+            // ======================================
+            // Draw this object type on the screen
             sc.DrawAt(m_position, '•');
 
             for (int i = 0; i < m_size; i++) {
                 sc.DrawAt(this.m_tail[i], '•');
             }
         }
-        // Grow the player
+        // Increase the size of the snake
         // ======================================
         public void Grow() {
             if (m_size < m_limit_size) {
@@ -54,7 +62,7 @@ namespace Snake
                 m_tail[0] = m_position;
             }
         }
-        // Spawns up the player on the screen
+        // Spawns up the player on the center of the screen
         // ======================================
         public void Spawn() {
             this.m_direction = Direction.LEFT;
