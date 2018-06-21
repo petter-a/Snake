@@ -5,7 +5,6 @@ namespace Snake
     {
         // Constructor / Initialize object
         public Bomb(Coordinate position) : base(position) {
-            m_isLethal = true;
         }
         // Update state
         // ======================================

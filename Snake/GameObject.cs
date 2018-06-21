@@ -43,15 +43,10 @@ namespace Snake
             get { return m_isActive; }
             set { m_isActive = value; }
         }
-        protected bool m_isLethal;
-        public bool IsLethal {
-            get { return m_isLethal; }
-        }
         public GameObject(Coordinate position) {
             m_direction = Direction.CENTER;
             m_position = position;
             m_isActive = true;
-            m_isLethal = false;
         }
         // Update state
         // ======================================

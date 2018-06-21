@@ -47,9 +47,7 @@ namespace Snake
         public void Test(Snake player)
         {
             bool createNew = false;
-            foreach (GameObject go in m_objects)
-            {
-                
+            foreach (GameObject go in m_objects) { 
                 if (go.IsActive && player.Position.Equals(go.Position)) {
                     if (go.GetType() == typeof(Apple))
                     {
@@ -68,8 +66,9 @@ namespace Snake
             if(!player.IsActive) {
                 player.Spawn();
             }
-            if(createNew)
+            if(createNew) {
                 AddApple();
+            }
         }
         // Update all items on level
         // ======================================
