@@ -34,6 +34,10 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="GameObject.cs" />
+    <Compile Include="Bomb.cs" />
+    <Compile Include="Apple.cs" />
+    <Compile Include="Snake.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
