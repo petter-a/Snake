@@ -4,6 +4,9 @@ namespace Snake
     public class Apple : GameObject
     {
         // Constructor / Initialize object
+        // ======================================
+        // Note that the Coordinate struct is passed
+        // straight away to the base class constructor
         public Apple(Coordinate position) : base(position) {
         }
         // Update state
@@ -23,6 +26,9 @@ namespace Snake
         // Draw the object
         // ======================================
         public override void Draw(Screen sc) {
+            // Add Drawing logic
+            // ======================================
+            // Draw this object type on the screen
             if(m_isActive) {
                 sc.DrawAt(m_position, '');
             }
