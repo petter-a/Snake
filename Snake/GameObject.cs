@@ -83,8 +83,14 @@ namespace Snake
         }
         // Draw the object
         // ======================================
-       public virtual void Draw(Screen sc) {
+        public virtual void Draw(Screen sc) {
             sc.DrawAt(m_position, ' ');
+        }
+        // Handle Collisions
+        // ======================================
+        public virtual void Intersect(GameObject go)
+        {
+            // Override in subclass to handle collision
         }
     }
 }

@@ -62,9 +62,6 @@ namespace Snake
                     }
                 }
             }
-            if(!player.IsActive) {
-                player.Spawn();
-            }
             if(createNew) {
                 AddApple();
             }

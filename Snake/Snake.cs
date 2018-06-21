@@ -51,6 +51,13 @@ namespace Snake
                 sc.DrawAt(this.m_tail[i], '•');
             }
         }
+        // Handle Collisions
+        // ======================================
+        // Define behaviour when an object is colliding
+        // with another
+        public override void Intersect(GameObject go)
+        {
+        }
         // Increase the size of the snake
         // ======================================
         public void Grow() {

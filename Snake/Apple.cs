@@ -33,6 +33,13 @@ namespace Snake
                 sc.DrawAt(m_position, '');
             }
         }
+        // Handle Collisions
+        // ======================================
+        // Define behaviour when an object is colliding
+        // with another
+        public override void Intersect(GameObject go)
+        {
+        }
 
     }
 }
