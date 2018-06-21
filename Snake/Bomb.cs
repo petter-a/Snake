@@ -7,9 +7,17 @@ namespace Snake
         public Bomb(Coordinate position) : base(position) {
         }
         // Update state
-        // ======================================
+        // ===================================================
         public override void Update() {
-            // Call baseclass
+            // TODO: Perform logic specific for this objectttype
+            // ===================================================
+            // Define the behaviour that diverges from the base
+            // class implementation. 
+
+            // Call baseclass to perform default logic
+            // ===================================================
+            // This call could be removed if no default handling
+            // is required/needed.
             base.Update();
         }
         // Draw the object
