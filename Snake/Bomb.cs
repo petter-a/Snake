@@ -8,10 +8,12 @@ namespace Snake
         // Note that the Coordinate struct is passed
         // straight away to the base class constructor
         public Bomb(Coordinate position) : base(position) {
+            m_direction = Direction.NORTH_WEST;
+            m_swap_direction = true;
         }
         // Update state
         // ===================================================
-        public override void Update() {
+        public override bool Update(Screen sc) {
             // TODO: Perform logic specific for this objectttype
             // ===================================================
             // Define the behaviour that diverges from the base
@@ -21,7 +23,7 @@ namespace Snake
             // ===================================================
             // This call could be removed if no default handling
             // is required/needed.
-            base.Update();
+            return base.Update(sc);
         }
         // Draw the object
         // ======================================
@@ -30,15 +32,15 @@ namespace Snake
             // ======================================
             // Draw this object type on the screen
             if (m_isActive) {
-                sc.DrawAt(m_position, 'Q');
+                sc.DrawAt(m_position, '*');
             }
         }
         // Handle Collisions
         // ======================================
         // Define behaviour when an object is colliding
         // with another
-        public override void Intersect(GameObject go)
-        {
+        public override bool Intersect(GameObject go) {
+            return base.Intersect(go);
         }
 
     }

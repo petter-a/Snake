@@ -8,117 +8,82 @@ namespace Snake
     // ======================================
     // This class encapsulates the logic of 
     // rendering the level of the game
-    class Level
-    {
-        LinkedList<GameObject> m_objects;
-
+    class Level {
+        List<GameObject> m_objects;
+        // ======================================
         // Constructor / Initialize object
+        // ======================================
         public Level() {
             m_objects =
-                new LinkedList<GameObject>();
+                new List<GameObject>();
             this.Reset();
         }
+        // ======================================
+        // Clear the drawing buffer
+        // ======================================
+        public bool IsEmptyPosition(Coordinate position) {
+            foreach(GameObject go in m_objects) {
+                if(go.Position.Equals(position)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        // ======================================
+        // Get a random position that is not occupied
+        // ======================================
         public Coordinate GetRandomPosition() {
             Coordinate pos;
-            Random rnd = new Random();
-            pos.X = (int)Math.Floor(rnd.NextDouble() * (Screen.MAX_X - 1));
-            pos.Y = (int)Math.Floor(rnd.NextDouble() * (Screen.MAX_Y - 1));
+            do {
+                Random rnd = new Random();
+                pos.X = (int)Math.Floor(rnd.NextDouble() * (Screen.MAX_X - 1));
+                pos.Y = (int)Math.Floor(rnd.NextDouble() * (Screen.MAX_Y - 1));
+            } while (!IsEmptyPosition(pos));
             return pos;
-        }
-        public void AddBomb() {
-            m_objects.AddFirst(
-                new Bomb(GetRandomPosition()));
-        }
-        public void AddApple() {
-            m_objects.AddFirst(
-                new Apple(GetRandomPosition()));
         }
         // Randomize map
         // ======================================
         public void Reset() {
             m_objects.Clear();
-            AddApple();
-            AddBomb();
+
+            // Add objects
+            m_objects.Add(
+                new Bomb(GetRandomPosition()));
+            m_objects.Add(
+                new Apple(GetRandomPosition()));
         }
         // Checks if an apple exists at the provided
         // position and if so, remove it
         // ======================================
         public void Test(Snake player)
         {
-            bool createNew = false;
-            foreach (GameObject go in m_objects) { 
-                if (go.IsActive && player.Position.Equals(go.Position)) {
-                    if (go.GetType() == typeof(Apple))
-                    {
-                        go.IsActive = false;
-                        player.Grow();
-                        player.Score += 1;
-                        createNew = true;
-                    }
-                    if (go.GetType() == typeof(Bomb))
-                    {
-                        go.IsActive = false;
-                        player.IsActive = false;
-                    }
-                }
+            foreach (GameObject go in m_objects) {
             }
-            if(createNew) {
-                AddApple();
-            }
+
         }
         // Update all items on level
         // ======================================
-        public void Update(Screen sc)
+        public void Update(Screen sc, Snake player)
         {
-            foreach (GameObject go in m_objects)
-            {
-                if (go.IsActive)
-                {
-                    go.Update();
-                    go.Draw(sc);
-                }
-            }
-        }
-    }
-    // Represent the screen
-    // ======================================
-    // This class encapsulates the logic of 
-    // rendering the game
-    public class Screen
-    {
-        public const int MAX_Y = 20;
-        public const int MAX_X = 80;
-        const int screen_size = MAX_X * MAX_Y;
+            // Remove inactive objects
+            // ======================================
+            m_objects.RemoveAll(x => x.IsActive == false);
 
-        char[] m_buffer;
-
-        // Constructor / Initialize object
-        public Screen() {
-            // Allocate screen buffer
-            m_buffer =
-                new char[screen_size];
-            this.ClearBuffer();
-        }
-        // Clear the drawing buffer
-        // ======================================
-        public void ClearBuffer() {
-            Console.Clear();
-            for (int i = 0; i < m_buffer.Length; i++) {
-                // Fill screen with spaces
-                m_buffer[i] = ' ';
+            // Add apples
+            // ======================================
+            if (m_objects.Count < 2) {
+                m_objects.Add(
+                    new Apple(GetRandomPosition()));
             }
-        }
-        // Clear the drawing buffer
-        // ======================================
-        public void DrawAt(Coordinate position, char data) {
-            m_buffer[position.Y * Screen.MAX_X + position.X] = data;
-        }
-        // Render the screen
-        // ======================================
-        public void Render() {
-            // Render screen
-            for (int i = 0; i < m_buffer.Length; i++){
-                Console.Write(m_buffer[i]);
+            // Update snake
+            // ======================================
+            player.Update(sc);
+            // Update alive objects
+            // ======================================
+            foreach (GameObject go in m_objects) {
+                player.Intersect(go);
+                go.Update(sc);
+                go.Draw(sc);
             }
         }
     }
@@ -127,28 +92,25 @@ namespace Snake
     {
         public static void Main(string[] args)
         {
-            Console.SetWindowSize(80, 20);
-            Console.CursorVisible = false;
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.White;
            
             Screen sc = new Screen();
             Level level = new Level();
             Snake snake = new Snake();
 
             // Game loop
-            while (true)
-            {
+            while (true) {
+                // Empty screen
+                // ======================================
                 sc.ClearBuffer();
 
-                snake.Update();
+                level.Update(sc, snake);
                 if (!snake.IsActive)
                 {
-                    snake.Spawn();
+                    snake.ReSpawn();
                 }
-                level.Update(sc);
-                level.Test(snake);
                 snake.Draw(sc);
+                // Render screen
+                // ======================================
                 sc.Render();
 
                 Console.Write(String.Format("Score: {2} Position: X:{0} Y:{1}", snake.Position.X,
@@ -160,24 +122,24 @@ namespace Snake
                     ConsoleKeyInfo cki = Console.ReadKey(true);
                     switch (cki.Key)
                     {
+                        case ConsoleKey.UpArrow:
+                            snake.Direction = Direction.NORTH;
+                            break;
                         case ConsoleKey.LeftArrow:
-                            snake.Direction = Direction.LEFT;
+                            snake.Direction = Direction.WEST;
                             break;
                         case ConsoleKey.RightArrow:
-                            snake.Direction = Direction.RIGHT;
-                            break;
-                        case ConsoleKey.UpArrow:
-                            snake.Direction = Direction.UP;
+                            snake.Direction = Direction.EAST;
                             break;
                         case ConsoleKey.DownArrow:
-                            snake.Direction = Direction.DOWN;
+                            snake.Direction = Direction.SOUTH;
                             break;
                         case ConsoleKey.Escape:
                             return; // Exit                                          
                     }
                 }
                 // Slow down
-                System.Threading.Thread.Sleep(100);
+                System.Threading.Thread.Sleep(10);
             }
         }
     }

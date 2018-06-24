@@ -1,63 +1,73 @@
 ﻿using System;
 namespace Snake
 {
-    public class Snake : GameObject
-    {
-        const int m_initial_size = 8;
+    public class Snake : GameObject {
+        const int m_initial_size = 4;
         const int m_limit_size = 100;
 
         int m_size;
         Coordinate[] m_tail;
-
-        int m_score;
-        public int Score {
-            get { return m_score; }
-            set { m_score = value; }
-        } 
-
+        public int Score { get; set; }
+        // ======================================
         // Constructor / Initialize object
         // ======================================
         // Note that a new Coordinate struct is passed
         // straight away to the base class constructor
         public Snake() : base(new Coordinate()) {
-            this.m_tail = new Coordinate[m_limit_size];
-            this.Spawn();
+            this.m_tail = new Coordinate[
+                m_limit_size];
+            this.ReSpawn();
         }
+        // ======================================
         // Update state
         // ======================================
-        public override void Update() {
+        public override bool Update(Screen sc) {
             // Shift left all positions from previous move
-            // Example: If moving left:
-            // |10|11|12|13|14| becomes |09|10|11|12|13|
             m_tail[0] = m_position;
-            for (int i = (m_size - 1); i > 0; i--) {
-                m_tail[i] = m_tail[i - 1];
+            for (int i = (m_size - 1); i > 0; i --) {
+                m_tail[i] = m_tail[i -1];           
             }
             // Call baseclass to perform default logic
             // ===================================================
-            // This call could be removed if no default handling
-            // is required/needed.
-            base.Update();
+            // This call could be removed if no default handling is required/needed.
+            return base.Update(sc);
         }
+        // ======================================
         // Draw the object
         // ======================================
         public override void Draw(Screen sc) {
             // Add Drawing logic
             // ======================================
             // Draw this object type on the screen
-            sc.DrawAt(m_position, '•');
-
+            sc.DrawAt(m_position, (char)248);
+            // Draw tail
             for (int i = 0; i < m_size; i++) {
-                sc.DrawAt(this.m_tail[i], '•');
+                sc.DrawAt(this.m_tail[i], (char)248);
             }
         }
         // Handle Collisions
         // ======================================
         // Define behaviour when an object is colliding
         // with another
-        public override void Intersect(GameObject go)
-        {
+        public override bool Intersect(GameObject go) {
+            if(m_position.Equals(go.Position)) { 
+                // Collide with Apple
+                if (go.GetType() == typeof(Apple)) {
+                    go.IsActive = false;
+                    this.Grow();
+                    this.Score ++;
+                    return true;
+                }
+                // Collide with Bomb
+                if (go.GetType() == typeof(Bomb)) {
+                    this.IsActive = false;
+                    return true;
+                }
+            }
+            return false;
+
         }
+        // ======================================
         // Increase the size of the snake
         // ======================================
         public void Grow() {
@@ -69,11 +79,12 @@ namespace Snake
                 m_tail[0] = m_position;
             }
         }
+        // ======================================
         // Spawns up the player on the center of the screen
         // ======================================
-        public void Spawn() {
-            this.m_direction = Direction.LEFT;
-            this.m_score = 0;
+        public void ReSpawn() {
+            this.m_direction = Direction.WEST;
+            this.Score = 0;
             this.m_isActive = true;
             this.m_size = m_initial_size; // Initial size
 
