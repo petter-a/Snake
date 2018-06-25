@@ -52,22 +52,13 @@ namespace Snake
             m_objects.Add(
                 new Apple(GetRandomPosition()));
         }
-        // Checks if an apple exists at the provided
-        // position and if so, remove it
-        // ======================================
-        public void Test(Snake player)
-        {
-            foreach (GameObject go in m_objects) {
-            }
-
-        }
         // Update all items on level
         // ======================================
         public void Update(Screen sc, Snake player)
         {
             // Remove inactive objects
             // ======================================
-            m_objects.RemoveAll(x => x.IsActive == false);
+            m_objects.RemoveAll(x => x.State == State.DEAD);
 
             // Add apples
             // ======================================
@@ -104,9 +95,9 @@ namespace Snake
                 sc.ClearBuffer();
 
                 level.Update(sc, snake);
-                if (!snake.IsActive)
+                if (snake.State == State.DEAD)
                 {
-                    snake.ReSpawn();
+                        snake.ReSpawn();
                 }
                 snake.Draw(sc);
                 // Render screen
@@ -139,7 +130,7 @@ namespace Snake
                     }
                 }
                 // Slow down
-                System.Threading.Thread.Sleep(10);
+                System.Threading.Thread.Sleep(1);
             }
         }
     }

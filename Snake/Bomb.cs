@@ -9,6 +9,7 @@ namespace Snake
         // straight away to the base class constructor
         public Bomb(Coordinate position) : base(position) {
             m_direction = Direction.NORTH_WEST;
+            m_State = State.MOVING;
             m_swap_direction = true;
         }
         // Update state
@@ -31,7 +32,7 @@ namespace Snake
             // Add Drawing logic
             // ======================================
             // Draw this object type on the screen
-            if (m_isActive) {
+            if (m_State != State.DEAD) {
                 sc.DrawAt(m_position, '*');
             }
         }

@@ -39,6 +39,16 @@ namespace Snake {
         TOP,
         BOTTOM
     }
+    // ======================================
+    // Describes object state
+    // ======================================
+    // Used to determine the border of the screen
+    public enum State 
+    {
+        WAITING,
+        MOVING,
+        DEAD
+    }
     // The game object
     // ======================================
     // The base class of all objects in the game
@@ -61,13 +71,13 @@ namespace Snake {
             set { m_direction = value; }
         }
         // ======================================
-        // Is active
+        // State
         // ======================================
-        protected bool m_isActive;
+        protected State m_State;
 
-        public bool IsActive {
-            get { return m_isActive; }
-            set { m_isActive = value; }
+        public State State { 
+            get { return m_State; }
+            set { m_State = value; }
         }
         // ======================================
         // Swap Direction
@@ -84,50 +94,43 @@ namespace Snake {
         public GameObject(Coordinate position) {
             m_direction = Direction.CENTER;
             m_position = position;
-            m_isActive = true;
             m_swap_direction = false;
         }
         // ======================================
         // Update state
         // ======================================
         public virtual bool Update(Screen sc) {
-            if (m_isActive) {
+            if (m_State == State.MOVING) {
+                Coordinate c = new Coordinate();
                 switch (this.m_direction) {
                     case Direction.NORTH_WEST:
-                        m_position.Y--;
-                        m_position.X--;
+                        c.Y --; c.X --;
                         break;
                     case Direction.NORTH:
-                        m_position.Y --;
+                        c.Y--;
                         break;
                     case Direction.NORTH_EAST:
-                        m_position.Y--;
-                        m_position.X++;
-                        break;
-                    case Direction.CENTER:
-                        // Be still
+                        c.Y--; c.X ++;
                         break;
                     case Direction.WEST:
-                        m_position.X--;
+                        c.X--;
                         break;
                     case Direction.EAST:
-                        m_position.X++;
+                        c.X++;
                         break;
                     case Direction.SOUTH_WEST:
-                        m_position.Y++;
-                        m_position.X--;
+                        c.Y++; c.X--;
                         break;
                     case Direction.SOUTH:
-                        m_position.Y++;
+                        c.Y++;
                         break;
                     case Direction.SOUTH_EAST:
-                        m_position.Y++;
-                        m_position.X++;
+                        c.Y++; c.X++;
                         break;
                 }
                 // Calculate screen position
                 // ======================================
-                NormalizePosition();
+                NormalizePosition(c);
             }
             return true;
         }
@@ -142,99 +145,116 @@ namespace Snake {
         // ======================================
         public virtual bool Intersect(GameObject go) {
             // Override in subclass to handle collision
-            // return true if handled, otherwise false
+            // return true if collides, otherwise false
+            if (m_position.Equals(go.Position)) {
+                return true;
+            }
             return false;
         }
         // ======================================
         // Move in the opposite direction
         // ======================================
-        protected void SetOppositeDirection(Border hit) {
+        protected Direction GetOppositeDirection(Border hit) {
             switch (this.m_direction)
             {
                 case Direction.NORTH_WEST:
                     if(hit == Border.LEFT) {
-                        this.m_direction = Direction.NORTH_EAST;
+                        return Direction.NORTH_EAST;
                     } else {
-                        this.m_direction = Direction.SOUTH_WEST;
+                        return Direction.SOUTH_WEST;
                     }
-                    break;
                 case Direction.NORTH:
-                    this.m_direction = Direction.SOUTH;
-                    break;
+                    return Direction.SOUTH;
                 case Direction.NORTH_EAST:
                     if(hit == Border.RIGHT) {
-                        this.m_direction = Direction.NORTH_WEST;
+                        return Direction.NORTH_WEST;
                     } else { 
-                        this.m_direction = Direction.SOUTH_EAST;
+                        return Direction.SOUTH_EAST;
                     }
-                    break;
-                case Direction.CENTER:
-                    break;
                 case Direction.WEST:
-                    this.m_direction = Direction.WEST;
-                    break;
+                    return Direction.EAST;
                 case Direction.EAST:
-                    this.m_direction = Direction.EAST;
-                    break;
+                    return Direction.WEST;
                 case Direction.SOUTH_WEST:
                     if(hit == Border.LEFT) {
-                        this.m_direction = Direction.SOUTH_EAST;
+                        return Direction.SOUTH_EAST;
                     }
                     else { 
-                        this.m_direction = Direction.NORTH_WEST;
+                        return Direction.NORTH_WEST;
                     }
-                    break;
                 case Direction.SOUTH:
-                    this.m_direction = Direction.NORTH;
-                    break;
+                    return Direction.NORTH;
                 case Direction.SOUTH_EAST:
                     if(hit == Border.RIGHT) {
-                        this.m_direction = Direction.SOUTH_WEST;
+                        return Direction.SOUTH_WEST;
                     }
                     else { 
-                        this.m_direction = Direction.NORTH_EAST;
+                        return Direction.NORTH_EAST;
                     }
-                    break;
+                default:
+                    return Direction.CENTER;
             }
         }
         // ======================================
         // Calculate positions
         // ======================================
-        public void NormalizePosition() {
-            // ======================================
-            // Set Border
-            // ======================================
+        protected void NormalizePosition(Coordinate diff)
+        {
             Border border = Border.NONE;
-            // Calculate MAX X
             // ======================================
-            if (m_position.X == (Screen.MAX_X - 1)) {
+            // RIGHT Border reached
+            // ======================================
+            if ((m_position.X + diff.X) == (Screen.MAX_X - 1))
+            {
                 border = Border.RIGHT;
-                m_position.X -= (m_swap_direction ? 1 : Screen.MAX_X - 1);
+                if (!m_swap_direction) {
+                    m_position.X = 0;
+                }
             }
             else
-            // Calculate MIX X 
             // ======================================
-            if (m_position.X == -1) {
+            // LEFT Border reached
+            // ======================================
+            if ((m_position.X + diff.X) == -1)
+            {
                 border = Border.LEFT;
-                m_position.X += (m_swap_direction ? 1 : Screen.MAX_X);
+                if (!m_swap_direction) {
+                    m_position.X = (Screen.MAX_X - 1);
+                }
             }
-            // Calculate MAX y
+            else {
+                m_position.X += diff.X;
+            }
             // ======================================
-            if (m_position.Y == (Screen.MAX_Y - 1)) {
+            // BOTTOM Border reached
+            // ======================================
+            if ((m_position.Y + diff.Y) == (Screen.MAX_Y - 1))
+            {
                 border = Border.BOTTOM;
-                m_position.Y -= (m_swap_direction ? 1 : Screen.MAX_Y - 1);
+                if (!m_swap_direction) {
+                    m_position.Y = 0;
+                }
             }
             else
-            // Calculate MIN Y 
             // ======================================
-            if (m_position.Y == -1) {
+            // TOP Border reached
+            // ======================================
+                if ((m_position.Y + diff.Y) == -1)
+            {
                 border = Border.TOP;
-                m_position.Y += (m_swap_direction ? 1 : Screen.MAX_Y);
+                if (!m_swap_direction) {
+                    m_position.Y = (Screen.MAX_Y - 1);
+                }
             }
-            if(m_swap_direction && border != Border.NONE) {
-                SetOppositeDirection(border);
+            else {
+                m_position.Y += diff.Y;
+            }
+            // ======================================
+            // Change direction
+            // ======================================
+            if (m_swap_direction && border != Border.NONE) {
+                this.m_direction = GetOppositeDirection(border);
             }
         }
-
     }
 }

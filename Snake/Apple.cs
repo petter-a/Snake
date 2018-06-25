@@ -29,7 +29,7 @@ namespace Snake
             // Add Drawing logic
             // ======================================
             // Draw this object type on the screen
-            if(m_isActive) {
+            if(m_State != State.DEAD) {
                 sc.DrawAt(m_position, 'A');
             }
         }

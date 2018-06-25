@@ -50,20 +50,37 @@ namespace Snake
         // Define behaviour when an object is colliding
         // with another
         public override bool Intersect(GameObject go) {
-            if(m_position.Equals(go.Position)) { 
+            if(base.Intersect(go)) { 
                 // Collide with Apple
                 if (go.GetType() == typeof(Apple)) {
-                    go.IsActive = false;
+                    go.State = State.DEAD;
                     this.Grow();
                     this.Score ++;
                     return true;
                 }
                 // Collide with Bomb
                 if (go.GetType() == typeof(Bomb)) {
-                    this.IsActive = false;
+                    this.State = State.DEAD;
+                    return true;
+                }
+                if (go.GetType() == typeof(Wall))
+                {
+                    this.Direction = GetOppositeDirection(Border.LEFT);
                     return true;
                 }
             }
+            // Check if tail is crossed by a bomb
+            // ======================================
+            if (go.GetType() == typeof(Bomb)) {
+                for (int i = 0; i < m_size; i++) {
+                    if (m_tail[i].Equals(go.Position)) {
+                        m_State = State.DEAD;
+                        return true;
+                    }
+                }
+            }
+
+
             return false;
 
         }
@@ -84,18 +101,18 @@ namespace Snake
         // ======================================
         public void ReSpawn() {
             this.m_direction = Direction.WEST;
+            this.m_State = State.MOVING;
+            this.m_size = m_initial_size;
             this.Score = 0;
-            this.m_isActive = true;
-            this.m_size = m_initial_size; // Initial size
 
             // Start at center of the screen
-            this.m_position.X = Screen.MAX_X / 2 - 1;
-            this.m_position.Y = Screen.MAX_Y / 2 - 1;
+            this.m_position.X = Screen.MAX_X/2 - 1;
+            this.m_position.Y = Screen.MAX_Y/2 - 1;
 
             for (int i = 0; i < this.m_size; i++)
             {
-                this.m_tail[i].X = Screen.MAX_X / 2 - 1 + i;
-                this.m_tail[i].Y = Screen.MAX_Y / 2 - 1;
+                this.m_tail[i].X = Screen.MAX_X/2 - 1 + i;
+                this.m_tail[i].Y = Screen.MAX_Y/2 - 1;
             }
         }
     }
