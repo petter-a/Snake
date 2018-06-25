@@ -63,11 +63,6 @@ namespace Snake
                     this.State = State.DEAD;
                     return true;
                 }
-                if (go.GetType() == typeof(Wall))
-                {
-                    this.Direction = GetOppositeDirection(Border.LEFT);
-                    return true;
-                }
             }
             // Check if tail is crossed by a bomb
             // ======================================
