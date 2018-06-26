@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Snake
-{
-
+namespace Snake {
     // Represent the level
     // ======================================
     // This class encapsulates the logic of 
     // rendering the level of the game
     class Level {
+        public Snake Snake {
+            get { return (Snake)m_objects[0]; }
+        }
         List<GameObject> m_objects;
         // ======================================
         // Constructor / Initialize object
@@ -46,15 +47,24 @@ namespace Snake
         public void Reset() {
             m_objects.Clear();
 
+            m_objects.Add(new Snake());
             // Add objects
             m_objects.Add(
                 new Bomb(GetRandomPosition()));
             m_objects.Add(
                 new Apple(GetRandomPosition()));
+            m_objects.Add(
+                new Apple(GetRandomPosition()));
+            m_objects.Add(
+                new Bouncer(GetRandomPosition()));
+            m_objects.Add(
+                new Bouncer(GetRandomPosition()));
+            m_objects.Add(
+                new Bouncer(GetRandomPosition()));
         }
         // Update all items on level
         // ======================================
-        public void Update(Screen sc, Snake player)
+        public void Update(Screen sc)
         {
             // Remove inactive objects
             // ======================================
@@ -62,20 +72,26 @@ namespace Snake
 
             // Add apples
             // ======================================
-            if (m_objects.Count < 2) {
+            while (m_objects.Count < 7) {
                 m_objects.Add(
                     new Apple(GetRandomPosition()));
             }
-            // Update snake
-            // ======================================
-            player.Update(sc);
             // Update alive objects
             // ======================================
-            foreach (GameObject go in m_objects) {
-                player.Intersect(go);
-                go.Update(sc);
-                go.Draw(sc);
+            for (int i = 0; i < m_objects.Count; i ++ ){
+                m_objects[i].Update();
             }
+            for (int i = 0; i < m_objects.Count; i++) {
+                for (int a = 0; a < m_objects.Count; a++) {
+                    if (a != i) {
+                        m_objects[i].Intersect(m_objects[a]);
+                    }
+                }
+                m_objects[i].Draw(sc);
+            }
+            Console.Write(String.Format("Score: {2} Position: X:{0} Y:{1}", m_objects[0].Position.X,
+                            m_objects[0].Position.Y, ((Snake)m_objects[0]).Score));
+
         }
     }
 
@@ -86,26 +102,19 @@ namespace Snake
            
             Screen sc = new Screen();
             Level level = new Level();
-            Snake snake = new Snake();
 
             // Game loop
             while (true) {
+                long a = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                 // Empty screen
                 // ======================================
                 sc.ClearBuffer();
 
-                level.Update(sc, snake);
-                if (snake.State == State.DEAD)
-                {
-                        snake.ReSpawn();
-                }
-                snake.Draw(sc);
+                level.Update(sc);
                 // Render screen
                 // ======================================
                 sc.Render();
 
-                Console.Write(String.Format("Score: {2} Position: X:{0} Y:{1}", snake.Position.X,
-                                            snake.Position.Y, snake.Score));
 
                 // Check keyboard input
                 if (Console.KeyAvailable == true)
@@ -114,23 +123,30 @@ namespace Snake
                     switch (cki.Key)
                     {
                         case ConsoleKey.UpArrow:
-                            snake.Direction = Direction.NORTH;
+                            level.Snake.Direction = Direction.NORTH;
                             break;
                         case ConsoleKey.LeftArrow:
-                            snake.Direction = Direction.WEST;
+                            level.Snake.Direction = Direction.WEST;
                             break;
                         case ConsoleKey.RightArrow:
-                            snake.Direction = Direction.EAST;
+                            level.Snake.Direction = Direction.EAST;
                             break;
                         case ConsoleKey.DownArrow:
-                            snake.Direction = Direction.SOUTH;
+                            level.Snake.Direction = Direction.SOUTH;
+                            break;
+                        case ConsoleKey.Q:
+                            level.Snake.Direction = Direction.NORTH_WEST;
+                            break;
+                        case ConsoleKey.W:
+                            level.Snake.Direction = Direction.NORTH_EAST;
                             break;
                         case ConsoleKey.Escape:
                             return; // Exit                                          
                     }
                 }
+                long sleep = 75L - (DateTimeOffset.Now.ToUnixTimeMilliseconds() -a);
                 // Slow down
-                System.Threading.Thread.Sleep(1);
+                System.Threading.Thread.Sleep(sleep < 0 ? 0 : (int)sleep);
             }
         }
     }

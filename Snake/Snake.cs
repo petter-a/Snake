@@ -21,7 +21,7 @@ namespace Snake
         // ======================================
         // Update state
         // ======================================
-        public override bool Update(Screen sc) {
+        public override bool Update() {
             // Shift left all positions from previous move
             m_tail[0] = m_position;
             for (int i = (m_size - 1); i > 0; i --) {
@@ -30,7 +30,7 @@ namespace Snake
             // Call baseclass to perform default logic
             // ===================================================
             // This call could be removed if no default handling is required/needed.
-            return base.Update(sc);
+            return base.Update();
         }
         // ======================================
         // Draw the object
@@ -53,31 +53,33 @@ namespace Snake
             if(base.Intersect(go)) { 
                 // Collide with Apple
                 if (go.GetType() == typeof(Apple)) {
-                    go.State = State.DEAD;
-                    this.Grow();
-                    this.Score ++;
+                    Grow();
+                    Score ++;
                     return true;
                 }
                 // Collide with Bomb
                 if (go.GetType() == typeof(Bomb)) {
-                    this.State = State.DEAD;
+                    ReSpawn();
+                    return true;
+                }
+                // Collide with Bouncer
+                if (go.GetType() == typeof(Bouncer))
+                {
+                    m_direction = GetReverseDirection();
                     return true;
                 }
             }
-            // Check if tail is crossed by a bomb
+            // Check if tail is hit by a bomb
             // ======================================
             if (go.GetType() == typeof(Bomb)) {
                 for (int i = 0; i < m_size; i++) {
                     if (m_tail[i].Equals(go.Position)) {
-                        m_State = State.DEAD;
+                        ReSpawn();
                         return true;
                     }
                 }
             }
-
-
             return false;
-
         }
         // ======================================
         // Increase the size of the snake
@@ -96,7 +98,7 @@ namespace Snake
         // ======================================
         public void ReSpawn() {
             this.m_direction = Direction.WEST;
-            this.m_State = State.MOVING;
+            this.m_state = State.MOVING;
             this.m_size = m_initial_size;
             this.Score = 0;
 

@@ -16,16 +16,17 @@ namespace Snake {
     // Describes direction
     // ======================================
     // Used to determine the direction of the player
-    public enum Direction {
+    public enum Direction 
+    {
+        NORTH,
+        SOUTH,
+        WEST,
+        EAST,
+        NONE,
         NORTH_WEST,
         NORTH_EAST,
-        NORTH,
-        WEST,
-        CENTER,
-        EAST,
         SOUTH_WEST,
-        SOUTH_EAST,
-        SOUTH
+        SOUTH_EAST
     }
     // ======================================
     // Describes direction
@@ -49,6 +50,7 @@ namespace Snake {
         MOVING,
         DEAD
     }
+    // ======================================
     // The game object
     // ======================================
     // The base class of all objects in the game
@@ -73,11 +75,11 @@ namespace Snake {
         // ======================================
         // State
         // ======================================
-        protected State m_State;
+        protected State m_state;
 
         public State State { 
-            get { return m_State; }
-            set { m_State = value; }
+            get { return m_state; }
+            set { m_state = value; }
         }
         // ======================================
         // Swap Direction
@@ -92,15 +94,15 @@ namespace Snake {
         // Constructor/Initialize Object
         // ======================================
         public GameObject(Coordinate position) {
-            m_direction = Direction.CENTER;
+            m_direction = Direction.NONE;
             m_position = position;
             m_swap_direction = false;
         }
         // ======================================
         // Update state
         // ======================================
-        public virtual bool Update(Screen sc) {
-            if (m_State == State.MOVING) {
+        public virtual bool Update() {
+            if (m_state == State.MOVING) {
                 Coordinate c = new Coordinate();
                 switch (this.m_direction) {
                     case Direction.NORTH_WEST:
@@ -141,7 +143,7 @@ namespace Snake {
             sc.DrawAt(m_position, ' ');
         }
         // ======================================
-        // Handle Collisions
+        // Check for Collisions
         // ======================================
         public virtual bool Intersect(GameObject go) {
             // Override in subclass to handle collision
@@ -152,7 +154,57 @@ namespace Snake {
             return false;
         }
         // ======================================
-        // Move in the opposite direction
+        // Get Collition 
+        // ======================================
+        public Border PredictObjectHit() {            
+            switch (this.m_direction) {
+                case Direction.NORTH_WEST:
+                    return Border.RIGHT;
+                case Direction.NORTH_EAST:
+                    return Border.LEFT;
+                case Direction.NORTH:
+                    return Border.BOTTOM;
+                case Direction.WEST:
+                    return Border.RIGHT;
+                case Direction.EAST:
+                    return Border.LEFT;
+                case Direction.SOUTH_WEST:
+                    return Border.RIGHT;
+                case Direction.SOUTH:
+                    return Border.TOP;
+                case Direction.SOUTH_EAST:
+                    return Border.LEFT;
+                default:
+                    return Border.NONE;
+            }
+        }
+        // ======================================
+        // Get the opposite direction 
+        // ======================================
+        protected Direction GetReverseDirection() {
+            switch (this.m_direction) {
+                case Direction.NORTH_WEST:
+                     return Direction.SOUTH_EAST;
+                case Direction.NORTH:
+                    return Direction.SOUTH;
+                case Direction.NORTH_EAST:
+                    return Direction.SOUTH_WEST;
+                case Direction.WEST:
+                    return Direction.EAST;
+                case Direction.EAST:
+                    return Direction.WEST;
+                case Direction.SOUTH_WEST:
+                    return Direction.NORTH_EAST;
+                case Direction.SOUTH:
+                    return Direction.NORTH;
+                case Direction.SOUTH_EAST:
+                    return Direction.NORTH_WEST;
+                default:
+                    return Direction.NONE;
+            }
+        }
+        // ======================================
+        // Move in the mirrored direction
         // ======================================
         protected Direction GetOppositeDirection(Border hit) {
             switch (this.m_direction)
@@ -192,14 +244,13 @@ namespace Snake {
                         return Direction.NORTH_EAST;
                     }
                 default:
-                    return Direction.CENTER;
+                    return Direction.NONE;
             }
         }
         // ======================================
         // Calculate positions
         // ======================================
-        protected void NormalizePosition(Coordinate diff)
-        {
+        protected void NormalizePosition(Coordinate diff) {
             Border border = Border.NONE;
             // ======================================
             // RIGHT Border reached
@@ -239,8 +290,7 @@ namespace Snake {
             // ======================================
             // TOP Border reached
             // ======================================
-                if ((m_position.Y + diff.Y) == -1)
-            {
+            if ((m_position.Y + diff.Y) == -1) {
                 border = Border.TOP;
                 if (!m_swap_direction) {
                     m_position.Y = (Screen.MAX_Y - 1);

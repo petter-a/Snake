@@ -39,6 +39,7 @@
     <Compile Include="Apple.cs" />
     <Compile Include="Screen.cs" />
     <Compile Include="Snake.cs" />
+    <Compile Include="Bouncer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

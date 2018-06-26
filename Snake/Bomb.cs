@@ -9,12 +9,12 @@ namespace Snake
         // straight away to the base class constructor
         public Bomb(Coordinate position) : base(position) {
             m_direction = Direction.NORTH_WEST;
-            m_State = State.MOVING;
+            m_state = State.MOVING;
             m_swap_direction = true;
         }
         // Update state
         // ===================================================
-        public override bool Update(Screen sc) {
+        public override bool Update() {
             // TODO: Perform logic specific for this objectttype
             // ===================================================
             // Define the behaviour that diverges from the base
@@ -24,7 +24,7 @@ namespace Snake
             // ===================================================
             // This call could be removed if no default handling
             // is required/needed.
-            return base.Update(sc);
+            return base.Update();
         }
         // Draw the object
         // ======================================
@@ -32,8 +32,8 @@ namespace Snake
             // Add Drawing logic
             // ======================================
             // Draw this object type on the screen
-            if (m_State != State.DEAD) {
-                sc.DrawAt(m_position, '*');
+            if (m_state != State.DEAD) {
+                sc.DrawAt(m_position, 'X');
             }
         }
         // Handle Collisions
@@ -41,7 +41,15 @@ namespace Snake
         // Define behaviour when an object is colliding
         // with another
         public override bool Intersect(GameObject go) {
-            return base.Intersect(go);
+            if (base.Intersect(go)) {
+                // Collide with Bouncer
+                if (go.GetType() == typeof(Bouncer))
+                {
+                    m_direction = GetReverseDirection();
+                    return true;
+                }
+            }
+            return false;
         }
 
     }

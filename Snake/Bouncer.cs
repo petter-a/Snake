@@ -1,17 +1,15 @@
 ﻿using System;
 namespace Snake
 {
-    public class Apple : GameObject
+    public class Bouncer : GameObject
     {
-        // Constructor / Initialize object
-        // ======================================
-        // Note that the Coordinate struct is passed
-        // straight away to the base class constructor
-        public Apple(Coordinate position) : base(position) {
+        public Bouncer(Coordinate position) : base(position)
+        {
         }
         // Update state
         // ======================================
-        public override bool Update() {
+        public override bool Update()
+        {
             // TODO: Perform logic specific for this objectttype
             // ===================================================
             // Define the behaviour that diverges from the base
@@ -25,27 +23,22 @@ namespace Snake
         }
         // Draw the object
         // ======================================
-        public override void Draw(Screen sc) {
+        public override void Draw(Screen sc)
+        {
             // Add Drawing logic
             // ======================================
             // Draw this object type on the screen
-            if(m_state != State.DEAD) {
-                sc.DrawAt(m_position, 'A');
+            if (m_state != State.DEAD) {
+                sc.DrawAt(m_position, 'B');
             }
         }
         // Handle Collisions
         // ======================================
         // Define behaviour when an object is colliding
         // with another
-        public override bool Intersect(GameObject go) {
-            if (base.Intersect(go)) {
-                // Remove
-                if (go.GetType() == typeof(Snake)) {
-                    m_state = State.DEAD;
-                    return true;
-                }
-            }
-            return false;
+        public override bool Intersect(GameObject go)
+        {
+            return base.Intersect(go);
         }
     }
 }
