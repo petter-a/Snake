@@ -1,10 +1,10 @@
 ﻿using System;
-namespace Snake
-{
+namespace Snake {
     public class Snake : GameObject {
         const int m_initial_size = 4;
         const int m_limit_size = 100;
 
+        bool m_swap_frame;
         int m_size;
         Coordinate[] m_tail;
         public int Score { get; set; }
@@ -22,6 +22,8 @@ namespace Snake
         // Update state
         // ======================================
         public override bool Update() {
+            // Shift frame
+            m_swap_frame = !m_swap_frame;
             // Shift left all positions from previous move
             m_tail[0] = m_position;
             for (int i = (m_size - 1); i > 0; i --) {
@@ -36,10 +38,11 @@ namespace Snake
         // Draw the object
         // ======================================
         public override void Draw(Screen sc) {
+            char graphic = m_swap_frame ? '<' : '>';
             // Add Drawing logic
             // ======================================
             // Draw this object type on the screen
-            sc.DrawAt(m_position, (char)248);
+            sc.DrawAt(m_position, graphic);
             // Draw tail
             for (int i = 0; i < m_size; i++) {
                 sc.DrawAt(this.m_tail[i], (char)248);
@@ -101,15 +104,16 @@ namespace Snake
             this.m_state = State.MOVING;
             this.m_size = m_initial_size;
             this.Score = 0;
+            this.m_swap_frame = true;
 
             // Start at center of the screen
-            this.m_position.X = Screen.MAX_X/2 - 1;
-            this.m_position.Y = Screen.MAX_Y/2 - 1;
+            this.m_position.X = Screen.MAX_SIZE_X/2 - 1;
+            this.m_position.Y = Screen.MAX_SIZE_Y/2 - 1;
 
             for (int i = 0; i < this.m_size; i++)
             {
-                this.m_tail[i].X = Screen.MAX_X/2 - 1 + i;
-                this.m_tail[i].Y = Screen.MAX_Y/2 - 1;
+                this.m_tail[i].X = Screen.MAX_SIZE_X/2 - 1 + i;
+                this.m_tail[i].Y = Screen.MAX_SIZE_Y/2 - 1;
             }
         }
     }

@@ -1,6 +1,5 @@
 ﻿using System;
-namespace Snake
-{
+namespace Snake {
     public class Apple : GameObject
     {
         // Constructor / Initialize object

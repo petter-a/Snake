@@ -1,18 +1,17 @@
 ﻿using System;
-
-namespace Snake
-{
+namespace Snake {
     // ======================================
     // Represent the screen
     // ======================================
     // This class encapsulates the logic of 
     // rendering the game
-    public class Screen
-    {
-        public const int MAX_Y = 20;
-        public const int MAX_X = 80;
-        const int screen_size = MAX_X * MAX_Y;
-
+    public class Screen {
+        // Constants
+        public const int MAX_SIZE_Y = 20;
+        public const int MAX_SIZE_X = 80;
+        const int scrn_size = MAX_SIZE_X * MAX_SIZE_Y;
+        const int view_size = MAX_SIZE_X * MAX_SIZE_Y;
+        // 
         char[] m_buffer;
 
         // Constructor / Initialize object
@@ -20,16 +19,16 @@ namespace Snake
             // ======================================
             // Init Console
             // ======================================
-            Console.SetWindowSize(MAX_X, MAX_Y + 1);
+            Console.SetWindowSize(MAX_SIZE_X, MAX_SIZE_Y +1);
             try { // Only works on Windows
-                Console.SetBufferSize(MAX_X, MAX_Y + 1);
+                Console.SetBufferSize(MAX_SIZE_X, MAX_SIZE_Y +1);
             } catch(Exception) {};
 
             // ======================================
             // Allocate screen buffer
             // ======================================
             m_buffer =
-                new char[screen_size];
+                new char[MAX_SIZE_X * MAX_SIZE_Y];
             // ======================================
             // Clear Buffer
             // ======================================
@@ -53,7 +52,7 @@ namespace Snake
             // ======================================
             // Draw at position
             // ======================================
-            m_buffer[position.Y * Screen.MAX_X 
+            m_buffer[position.Y * Screen.MAX_SIZE_X 
                      + position.X] = data;
         }
         // ======================================

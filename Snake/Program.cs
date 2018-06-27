@@ -37,8 +37,8 @@ namespace Snake {
             Coordinate pos;
             do {
                 Random rnd = new Random();
-                pos.X = (int)Math.Floor(rnd.NextDouble() * (Screen.MAX_X - 1));
-                pos.Y = (int)Math.Floor(rnd.NextDouble() * (Screen.MAX_Y - 1));
+                pos.X = (int)Math.Floor(rnd.NextDouble() * (Screen.MAX_SIZE_X - 1));
+                pos.Y = (int)Math.Floor(rnd.NextDouble() * (Screen.MAX_SIZE_Y - 1));
             } while (!IsEmptyPosition(pos));
             return pos;
         }
@@ -114,7 +114,6 @@ namespace Snake {
                 // Render screen
                 // ======================================
                 sc.Render();
-
 
                 // Check keyboard input
                 if (Console.KeyAvailable == true)

@@ -1,6 +1,5 @@
 ﻿using System;
-namespace Snake
-{
+namespace Snake {
     public class Bouncer : GameObject
     {
         public Bouncer(Coordinate position) : base(position)

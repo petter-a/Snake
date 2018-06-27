@@ -48,6 +48,7 @@ namespace Snake {
     {
         WAITING,
         MOVING,
+        DYING,
         DEAD
     }
     // ======================================
@@ -255,7 +256,7 @@ namespace Snake {
             // ======================================
             // RIGHT Border reached
             // ======================================
-            if ((m_position.X + diff.X) == (Screen.MAX_X - 1))
+            if ((m_position.X + diff.X) == (Screen.MAX_SIZE_X - 1))
             {
                 border = Border.RIGHT;
                 if (!m_swap_direction) {
@@ -270,7 +271,7 @@ namespace Snake {
             {
                 border = Border.LEFT;
                 if (!m_swap_direction) {
-                    m_position.X = (Screen.MAX_X - 1);
+                    m_position.X = (Screen.MAX_SIZE_X - 1);
                 }
             }
             else {
@@ -279,7 +280,7 @@ namespace Snake {
             // ======================================
             // BOTTOM Border reached
             // ======================================
-            if ((m_position.Y + diff.Y) == (Screen.MAX_Y - 1))
+            if ((m_position.Y + diff.Y) == (Screen.MAX_SIZE_Y - 1))
             {
                 border = Border.BOTTOM;
                 if (!m_swap_direction) {
@@ -293,7 +294,7 @@ namespace Snake {
             if ((m_position.Y + diff.Y) == -1) {
                 border = Border.TOP;
                 if (!m_swap_direction) {
-                    m_position.Y = (Screen.MAX_Y - 1);
+                        m_position.Y = (Screen.MAX_SIZE_Y - 1);
                 }
             }
             else {
