@@ -28,7 +28,7 @@ namespace Snake {
             // ======================================
             // Draw this object type on the screen
             if (m_state != State.DEAD) {
-                sc.DrawAt(m_position, 'B');
+                sc.DrawAt(m_position, '@');
             }
         }
         // Handle Collisions
