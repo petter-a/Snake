@@ -7,16 +7,40 @@ namespace Snake {
         bool m_swap_frame;
         int m_size;
         Coordinate[] m_tail;
-        public int Score { get; set; }
+        int m_score;
+        public int Score { 
+            get { return m_score; } 
+            set { m_score = value; } 
+        }
         // ======================================
         // Constructor / Initialize object
         // ======================================
         // Note that a new Coordinate struct is passed
         // straight away to the base class constructor
         public Snake() : base(new Coordinate()) {
-            this.m_tail = new Coordinate[
+            m_tail = new Coordinate[
                 m_limit_size];
-            this.ReSpawn();
+            Reset();
+        }
+        // ======================================
+        // Reset State
+        // ======================================
+        public void Reset() {
+            m_direction = Direction.WEST;
+            m_state = State.MOVING;
+            m_size = m_initial_size;
+            m_swap_frame = true;
+            m_score = 0;
+
+            // Start at center of the screen
+            m_position.X = Screen.MAX_SIZE_X / 2 - 1;
+            m_position.Y = Screen.MAX_SIZE_Y / 2 - 1;
+
+            for (int i = 0; i < this.m_size; i++)
+            {
+                m_tail[i].X = Screen.MAX_SIZE_X / 2 - 1 + i;
+                m_tail[i].Y = Screen.MAX_SIZE_Y / 2 - 1;
+            }
         }
         // ======================================
         // Update state
@@ -31,14 +55,13 @@ namespace Snake {
             }
             // Call baseclass to perform default logic
             // ===================================================
-            // This call could be removed if no default handling is required/needed.
             return base.Update();
         }
         // ======================================
         // Draw the object
         // ======================================
         public override void Draw(Screen sc) {
-            char graphic = m_swap_frame ? '<' : '>';
+            char graphic = m_swap_frame ? '>' : '<';
             // Add Drawing logic
             // ======================================
             // Draw this object type on the screen
@@ -57,18 +80,17 @@ namespace Snake {
                 // Collide with Apple
                 if (go.GetType() == typeof(Apple)) {
                     Grow();
-                    Score ++;
                     return true;
                 }
                 // Collide with Bomb
                 if (go.GetType() == typeof(Bomb)) {
-                    ReSpawn();
+                    Shrink();
                     return true;
                 }
                 // Collide with Bouncer
-                if (go.GetType() == typeof(Bouncer))
-                {
-                    m_direction = GetReverseDirection();
+                if (go.GetType() == typeof(Bouncer)) {
+                    m_direction = 
+                        GetReverseDirection();
                     return true;
                 }
             }
@@ -77,7 +99,7 @@ namespace Snake {
             if (go.GetType() == typeof(Bomb)) {
                 for (int i = 0; i < m_size; i++) {
                     if (m_tail[i].Equals(go.Position)) {
-                        ReSpawn();
+                        Shrink();
                         return true;
                     }
                 }
@@ -85,7 +107,7 @@ namespace Snake {
             return false;
         }
         // ======================================
-        // Increase the size of the snake
+        // Increase the size of the worm
         // ======================================
         public void Grow() {
             if (m_size < m_limit_size) {
@@ -95,25 +117,21 @@ namespace Snake {
                 }
                 m_tail[0] = m_position;
             }
+            m_score++;
         }
         // ======================================
-        // Spawns up the player on the center of the screen
+        // Shrink the size of the worm
         // ======================================
-        public void ReSpawn() {
-            this.m_direction = Direction.WEST;
-            this.m_state = State.MOVING;
-            this.m_size = m_initial_size;
-            this.Score = 0;
-            this.m_swap_frame = true;
-
-            // Start at center of the screen
-            this.m_position.X = Screen.MAX_SIZE_X/2 - 1;
-            this.m_position.Y = Screen.MAX_SIZE_Y/2 - 1;
-
-            for (int i = 0; i < this.m_size; i++)
-            {
-                this.m_tail[i].X = Screen.MAX_SIZE_X/2 - 1 + i;
-                this.m_tail[i].Y = Screen.MAX_SIZE_Y/2 - 1;
+        public void Shrink() {
+            if(m_score -2 < 0) {
+                m_score -= 0;  
+            } else {
+                m_score -= 2;
+            }
+            if(m_size -1 > -1) {
+                --m_size;
+            } else {
+                Reset();     
             }
         }
     }
